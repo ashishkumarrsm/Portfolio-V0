@@ -1,36 +1,64 @@
+"use client"
+
 import Link from "next/link"
 import { ArrowLeft, Briefcase, Download, GraduationCap, Mail, MapPin, Phone, User } from "lucide-react"
+import { useState, useEffect } from "react"
 
 import { Button } from "@/components/ui/button"
-import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
-import { Badge } from "@/components/ui/badge"
+import { generateResumePDF } from "@/app/utils/pdf"
+import { ResumeHeader } from "../components/resume/ResumeHeader"
+import { ResumeSection } from "../components/resume/ResumeSection"
+import { SkillCard } from "../components/resume/SkillCard"
+import { BadgeSkill } from "../components/resume/BadgeSkill"
 
 export default function ResumePage() {
+  const [isDownloading, setIsDownloading] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  const handleDownload = async () => {
+    setIsDownloading(true);
+    try {
+      await generateResumePDF();
+    } catch (error) {
+      console.error('Error generating PDF:', error);
+    } finally {
+      setIsDownloading(false);
+    }
+  };
+
+  if (!mounted) {
+    return null;
+  }
+
   return (
-    <div className="flex flex-col min-h-screen">
+    <div className="flex flex-col min-h-screen bg-gradient-to-b from-gray-50 to-white dark:from-gray-950 dark:to-gray-900">
       <header className="sticky top-0 z-40 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container mx-auto flex h-16 items-center">
-          <Link href="/" className="font-bold text-xl">
+        <div className="container mx-auto flex h-16 items-center px-4">
+          <Link href="/" className="font-bold text-xl bg-gradient-to-r from-purple-600 to-rose-500 bg-clip-text text-transparent hover:opacity-80 transition-opacity">
             Portfolio
           </Link>
           <nav className="ml-auto flex gap-6">
-            <Link href="/" className="text-sm font-medium transition-colors hover:text-foreground/80">
+            <Link href="/" className="text-sm font-medium transition-colors hover:text-purple-600 dark:hover:text-purple-400">
               Home
             </Link>
-            <Link href="/projects" className="text-sm font-medium transition-colors hover:text-foreground/80">
+            <Link href="/projects" className="text-sm font-medium transition-colors hover:text-purple-600 dark:hover:text-purple-400">
               Projects
             </Link>
-            <Link href="/about" className="text-sm font-medium transition-colors hover:text-foreground/80">
+            <Link href="/about" className="text-sm font-medium transition-colors hover:text-purple-600 dark:hover:text-purple-400">
               About
             </Link>
             <Link
               href="/resume"
-              className="text-sm font-medium transition-colors hover:text-foreground/80 text-foreground"
+              className="text-sm font-medium transition-colors hover:text-purple-600 dark:hover:text-purple-400 text-foreground"
             >
               Resume
             </Link>
-            <Link href="/contact" className="text-sm font-medium transition-colors hover:text-foreground/80">
+            <Link href="/contact" className="text-sm font-medium transition-colors hover:text-purple-600 dark:hover:text-purple-400">
               Contact
             </Link>
           </nav>
@@ -41,161 +69,137 @@ export default function ResumePage() {
           <div className="container mx-auto px-4 md:px-6">
             <div className="flex flex-col items-start gap-4">
               <Link href="/">
-                <Button variant="ghost" className="gap-1">
+                <Button variant="ghost" className="gap-1 hover:bg-purple-100 dark:hover:bg-purple-900/30">
                   <ArrowLeft className="h-4 w-4" />
                   Back to Home
                 </Button>
               </Link>
               <div className="flex items-center justify-between w-full">
-                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl">Resume</h1>
-                <Button className="gap-2">
+                <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl bg-gradient-to-r from-purple-600 to-rose-500 bg-clip-text text-transparent">
+                  Resume
+                </h1>
+                <Button 
+                  className="gap-2 bg-gradient-to-r from-purple-600 to-rose-500 hover:from-purple-700 hover:to-rose-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
+                  onClick={handleDownload}
+                  disabled={isDownloading}
+                >
                   <Download className="h-4 w-4" />
-                  Download PDF
+                  {isDownloading ? 'Downloading...' : 'Download PDF'}
                 </Button>
               </div>
             </div>
-            <div className="mt-12 max-w-4xl mx-auto bg-white dark:bg-gray-950 border rounded-lg shadow-sm p-8 print:shadow-none print:border-none">
+            <div className="mt-12 max-w-4xl mx-auto bg-white dark:bg-gray-950 border rounded-xl shadow-lg p-8 print:shadow-none print:border-none">
               <div className="space-y-8">
-                <div className="space-y-4">
-                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                    <div>
-                      <h2 className="text-2xl font-bold">Alex Chen</h2>
-                      <p className="text-gray-500 dark:text-gray-400">Full Stack Developer</p>
-                    </div>
-                    <div className="flex flex-col gap-1 text-sm">
-                      <div className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                        <span>alex@example.com</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Phone className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                        <span>(123) 456-7890</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-gray-500 dark:text-gray-400" />
-                        <span>San Francisco, CA</span>
-                      </div>
-                    </div>
-                  </div>
-                  <Separator />
-                  <div className="space-y-2">
-                    <h3 className="font-semibold">Professional Summary</h3>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                      Experienced Full Stack Developer with 5+ years of expertise in building responsive web
-                      applications and mobile solutions. Proficient in modern JavaScript frameworks, server-side
-                      technologies, and database systems. Passionate about creating intuitive user experiences and
-                      writing clean, maintainable code.
-                    </p>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <Briefcase className="h-5 w-5" />
-                    <h3 className="text-lg font-semibold">Work Experience</h3>
-                  </div>
-                  <div className="grid gap-6">
+                <ResumeHeader
+                  name="Alex Chen"
+                  title="Full Stack Developer"
+                  email="alex@example.com"
+                  phone="(123) 456-7890"
+                  location="San Francisco, CA"
+                />
+                <Separator className="bg-gradient-to-r from-purple-600/20 to-rose-500/20" />
+                <ResumeSection title="Professional Summary" icon={User}>
+                  <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">
+                    Experienced Full Stack Developer with 5+ years of expertise in building responsive web
+                    applications and mobile solutions. Proficient in modern JavaScript frameworks, server-side
+                    technologies, and database systems. Passionate about creating intuitive user experiences and
+                    writing clean, maintainable code.
+                  </p>
+                </ResumeSection>
+                <ResumeSection title="Work Experience" icon={Briefcase}>
+                  <div className="grid gap-8">
                     {workExperience.map((job, index) => (
-                      <div key={index} className="space-y-2">
+                      <div key={index} className="space-y-3 p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                           <div>
-                            <h4 className="font-semibold">{job.role}</h4>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">{job.company}</div>
+                            <h4 className="font-semibold text-gray-900 dark:text-gray-100">{job.role}</h4>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">{job.company}</div>
                           </div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">
                             {job.location} | {job.period}
                           </div>
                         </div>
-                        <ul className="text-sm text-gray-500 dark:text-gray-400 list-disc pl-5 space-y-1">
+                        <ul className="text-sm text-gray-600 dark:text-gray-300 list-disc pl-5 space-y-2">
                           {job.responsibilities.map((responsibility, idx) => (
-                            <li key={idx}>{responsibility}</li>
+                            <li key={idx} className="leading-relaxed">{responsibility}</li>
                           ))}
                         </ul>
                       </div>
                     ))}
                   </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <GraduationCap className="h-5 w-5" />
-                    <h3 className="text-lg font-semibold">Education</h3>
-                  </div>
+                </ResumeSection>
+                <ResumeSection title="Education" icon={GraduationCap}>
                   <div className="grid gap-6">
                     {educationHistory.map((edu, index) => (
-                      <div key={index} className="space-y-1">
+                      <div key={index} className="space-y-2 p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors">
                         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
                           <div>
-                            <h4 className="font-semibold">{edu.degree}</h4>
-                            <div className="text-sm text-gray-500 dark:text-gray-400">{edu.institution}</div>
+                            <h4 className="font-semibold text-gray-900 dark:text-gray-100">{edu.degree}</h4>
+                            <div className="text-sm text-gray-600 dark:text-gray-400">{edu.institution}</div>
                           </div>
                           <div className="text-sm text-gray-500 dark:text-gray-400">
                             {edu.location} | {edu.period}
                           </div>
                         </div>
-                        {edu.details && <p className="text-sm text-gray-500 dark:text-gray-400">{edu.details}</p>}
+                        {edu.details && <p className="text-sm text-gray-600 dark:text-gray-300 leading-relaxed">{edu.details}</p>}
                       </div>
                     ))}
                   </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <User className="h-5 w-5" />
-                    <h3 className="text-lg font-semibold">Skills</h3>
-                  </div>
-                  <div className="grid gap-6">
+                </ResumeSection>
+                <ResumeSection title="Skills" icon={User}>
+                  <div className="grid gap-8">
                     <div className="grid gap-4">
-                      <h4 className="font-semibold">Technical Skills</h4>
-                      <div className="grid gap-3">
+                      <h4 className="font-semibold text-gray-900 dark:text-gray-100">Technical Skills</h4>
+                      <div className="grid gap-4">
                         {technicalSkills.map((skill, index) => (
-                          <div key={index} className="space-y-1">
-                            <div className="flex items-center justify-between text-sm">
-                              <span>{skill.name}</span>
-                              <span className="text-gray-500 dark:text-gray-400">{skill.level}%</span>
-                            </div>
-                            <Progress value={skill.level} className="h-2" />
-                          </div>
+                          <SkillCard
+                            key={index}
+                            name={skill.name}
+                            level={skill.level}
+                            index={index}
+                          />
                         ))}
                       </div>
                     </div>
                     <div className="grid gap-4">
-                      <h4 className="font-semibold">Other Skills</h4>
+                      <h4 className="font-semibold text-gray-900 dark:text-gray-100">Other Skills</h4>
                       <div className="flex flex-wrap gap-2">
                         {otherSkills.map((skill, index) => (
-                          <Badge key={index} variant="outline">
-                            {skill}
-                          </Badge>
+                          <BadgeSkill
+                            key={index}
+                            skill={skill}
+                            index={index}
+                          />
                         ))}
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="flex items-center gap-2">
-                    <h3 className="text-lg font-semibold">Certifications</h3>
-                  </div>
-                  <div className="grid gap-2">
+                </ResumeSection>
+                <ResumeSection title="Certifications" icon={User}>
+                  <div className="grid gap-4">
                     {certifications.map((cert, index) => (
-                      <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1">
-                        <div className="font-medium">{cert.name}</div>
+                      <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 p-4 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-900/50 transition-colors">
+                        <div className="font-medium text-gray-900 dark:text-gray-100">{cert.name}</div>
                         <div className="text-sm text-gray-500 dark:text-gray-400">
                           {cert.issuer} | {cert.year}
                         </div>
                       </div>
                     ))}
                   </div>
-                </div>
+                </ResumeSection>
               </div>
             </div>
           </div>
         </section>
       </main>
-      <footer className="w-full border-t py-6">
-        <div className="container mx-auto flex flex-col items-center justify-between gap-4 md:flex-row">
+      <footer className="w-full border-t py-6 bg-white dark:bg-gray-950">
+        <div className="container mx-auto flex flex-col items-center justify-between gap-4 md:flex-row px-4">
           <p className="text-sm text-gray-500 dark:text-gray-400">
             © {new Date().getFullYear()} Alex Chen. All rights reserved.
           </p>
           <nav className="flex gap-4">
             <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"
@@ -215,7 +219,7 @@ export default function ResumePage() {
               </Button>
             </Link>
             <Link href="mailto:alex@example.com">
-              <Button variant="ghost" size="icon">
+              <Button variant="ghost" size="icon" className="hover:bg-purple-100 dark:hover:bg-purple-900/30 transition-colors">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="24"

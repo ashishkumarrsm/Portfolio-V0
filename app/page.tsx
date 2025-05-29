@@ -89,7 +89,7 @@ export default function Home() {
                 <div className="relative w-full h-[300px] sm:h-[400px] lg:h-[500px] rounded-lg overflow-hidden shadow-2xl">
                   <div className="absolute inset-0 bg-gradient-to-r from-purple-600 to-rose-500 rounded-lg animate-gradient"></div>
                   <div className="absolute inset-0 flex items-center justify-center text-white text-xl font-bold">
-                    Your Profile Image
+                    <img src="https://img.freepik.com/free-photo/programming-background-with-person-working-with-codes-computer_23-2150010130.jpg?ga=GA1.1.1958545110.1736437571&semt=ais_items_boosted&w=740" alt="profile" className="w-full h-full object-cover rounded-lg" />
                   </div>
                 </div>
               </div>
